@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ncepu.barcodescan.dao.PersonDao">
+  <resultMap id="BaseResultMap" type="cn.ncepu.barcodescan.entity.Person">
+    <!--@mbg.generated-->
+    <id column="id" jdbcType="CHAR" property="id" />
+    <result column="name" jdbcType="CHAR" property="name" />
+    <result column="depart" jdbcType="CHAR" property="depart" />
+<!--    <result column="phone" jdbcType="CHAR" property="phone" />-->
+    <result column="temperature" jdbcType="CHAR" property="temperature" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, `name`, depart, phone,temperature
+--     id, `name`, depart, temperature
+  </sql>
+  <update id="updateF">
+    update `person` set `name`=#{param1},`depart`=#{param2} where id='flag' and `gmt_create`=current_date
+  </update>
+  <select id="selectAll"  resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from person where id!='flag' and `gmt_create`=current_date
+  </select>
+  <select id="countAll"  resultType="integer">
+    <!--@mbg.generated-->
+    select count (`id`)
+    from person where id!='flag' and `gmt_create` =current_date
+  </select>
+  <select id="selectF" resultType="java.lang.Integer">
+    select count(`id`) from `person` where id='flag' and `gmt_create`=current_date
+  </select>
+  <select id="selectCu" resultType="java.lang.Integer">
+    select `name` from `person` where id='flag' and `gmt_create`=current_date
+  </select>
+  <select id="selectTa" resultType="java.lang.Integer">
+    select `depart` from `person` where id='flag' and `gmt_create`=current_date
+  </select>
+  <delete id="delete" >
+    <!--@mbg.generated-->
+    delete from person
+    where `gmt_create` !=current_date
+  </delete>
+<!--  -->
+  <insert id="save" keyColumn="id" keyProperty="id" parameterType="cn.ncepu.barcodescan.entity.Person" >
+    <!--@mbg.generated-->
+    insert into person (`id`,`name`, `depart`, `phone`,`temperature`,`gmt_create`
+      )
+    values (#{id,jdbcType=CHAR},#{name,jdbcType=CHAR}, #{depart,jdbcType=CHAR},#{phone,jdbcType=CHAR}, #{temperature,jdbcType=CHAR},current_date
+      )
+  </insert>
+  <insert id="insertF">
+        insert into person (`id`,`name`, `depart`,`phone`, `temperature`,`gmt_create`
+      )
+    values ('flag','0', '1','ui' ,'X',current_date
+      )
+  </insert>
+</mapper>

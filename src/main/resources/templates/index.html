@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" th:src="@{/jquery-1.9.1.min.js}"></script>
+    <title>Title</title>
+</head>
+<style>
+
+    div {
+        width: 550px;
+        height: 180px;
+        padding: 50px;
+        background: aliceblue;
+        border: 5px #eaf3fb solid;
+        margin: auto;
+        position: absolute;
+        top: -50px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    input {
+        width: 360px;
+        height: 30px;
+        padding: 5px;
+        font-size: 18px;
+        border: #4e4e4e 1px solid;
+    }
+
+    .tip {
+        font-family: "微软雅黑";
+        margin-top: 5px;
+        font-size: 18px;
+    }
+
+    .introduce {
+        display: inline-block;
+        margin-top: 150px;
+        font-size: 15px;
+        width: 120%;
+    }
+
+    ul li {
+        list-style: none;
+        margin-left: -100px;
+        margin-top: 7px;
+        color: #59738b;
+    }
+</style>
+<body>
+<div class="content">
+    <input type="text" placeholder="请选中此输入框后扫描" id="info" autofocus="autofocus">
+    <h2>扫描结果</h2>
+    <span id="tip" class="tip"></span>
+    <ul class="introduce">
+        <li>使用说明:</li>
+        <li>1、本程序将每天的扫描记录自动整理到 [[${path}]]</li>
+        <li>2、当程序意外崩溃，已保存的扫描记录不会丢失，您可以打开程序继续扫描;</li>
+        <li>3、同一个二维码只能扫描一次，若不能自动提交，请按回车手动提交</li>
+        <li>4、本程序运行期间，不能打开Excel表，不要删除用户目录下的.h2缓存文件夹;</li>
+        <li>5、每张表保存500条记录，超过500条会自动分表；</li>
+        <li>6、系统时间与真实时间要保持一致；</li>
+        <li>7、当自动导出的表被误删，您想找回被删除的记录时，可以<a href="/export">点击此处 手动导出截止当前时刻的所有记录</a>。注意：手动导出的表不会被自动更新！</li>
+    </ul>
+</div>
+<script>
+    $(function () {
+            function printInputValue() {
+                $("#tip").text("");
+                let inputValue = document.getElementById("info").value;
+                inputValue.replace("[\n\r]", "")
+                let info = {
+                    "id": inputValue.split("-")[0],
+                    "name": inputValue.split("-")[1],
+                    "depart": inputValue.split("-")[2],
+                    "phone": inputValue.split("-")[4],
+                    "temperature": inputValue.split("-")[3]
+
+                };
+                let person = JSON.stringify(info);
+                $.ajax({
+                    type: "POST",
+                    // url: "/person",
+                    url: "http://192.168.74.128:35007/person",
+                    contentType: "application/json;charset=UTF-8",  //发送信息至服务器时内容编码类型。
+                    // dataType: "json",  // 预期服务器返回的数据类型。如果不指定，jQuery 将自动根据 HTTP 包 MIME 信息来智能判断，比如XML MIME类型就被识别为XML。
+                    data: person,
+                    success: function (res) {
+                        document.getElementById("tip").innerHTML = res;
+                        if (res.indexOf("误") !== -1 || res.indexOf("禁") !== -1) alert(res);
+                    }
+                });
+            }
+
+            $(document).keyup(function (event) {
+                if (event.keyCode === 13) {
+                    $("#info").focus();
+                    let hahaha = document.getElementById("info").value;
+                    if (hahaha === "" || hahaha === "\n" || hahaha === "\r" || hahaha === "\n\r" || hahaha === "\r\n") throw "duang";
+                    printInputValue();
+                    $("#info").val("");
+                    $("#info").focus();
+                }
+            });
+        }
+    )
+</script>
+</body>
+
+</html>
